@@ -1,0 +1,456 @@
+openapi: 3.0.3
+
+info:
+  title: Système de Nutrition Intelligente — API
+  description: |
+    API REST de recommandations nutritionnelles personnalisées, scientifiquement fondées et réalistes.
+
+    ## Fonctionnement
+    L'API reçoit un profil utilisateur (données biométriques + objectif) et retourne
+    un plan nutritionnel complet incluant : IMC, BMR, TDEE, calories cibles et macronutriments.
+
+    ## Formules utilisées
+    - **IMC** : poids(kg) / taille(m)²  — Classification OMS 2000
+    - **BMR** : Mifflin-St Jeor (1990) — plus précise que Harris-Benedict
+    - **TDEE** : BMR × facteur d'activité (Ainsworth et al., 2011)
+    - **Macros** : Protéines 1.6–2.2 g/kg, Lipides 25–35%, Glucides : reste calorique
+
+    ## ⚠️ Avertissement
+    Ce système est à visée **éducative et préventive uniquement**.
+    Il ne remplace pas un avis médical, diététique ou nutritionnel professionnel.
+
+  version: 1.0.0
+  contact:
+    name: Anasoufkir
+    url: https://github.com/Anasoufkir/Syst-me-de-Nutrition-Intelligente
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Serveur de développement local
+  - url: https://api.nutrition.example.com/api/v1
+    description: Serveur de production
+
+tags:
+  - name: Nutrition
+    description: Analyse et recommandations nutritionnelles
+  - name: System
+    description: Endpoints système (santé, statut)
+
+paths:
+
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      description: Vérifie que l'API est opérationnelle.
+      operationId: healthCheck
+      responses:
+        '200':
+          description: API opérationnelle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                status: ok
+                version: "1.0.0"
+                environment: production
+
+  /nutrition/validate:
+    post:
+      tags: [Nutrition]
+      summary: Valider un profil utilisateur (UC-01)
+      description: |
+        Valide les données du profil utilisateur sans effectuer les calculs nutritionnels.
+        Utile pour valider les formulaires en amont.
+      operationId: validateProfile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileInput'
+            example:
+              sexe: homme
+              age: 30
+              taille: 175
+              poids: 80
+              niveau_activite: moderement_actif
+              objectif: perte_poids
+      responses:
+        '200':
+          description: Profil valide
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationSuccessResponse'
+        '400':
+          description: Profil invalide — erreurs de validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+
+  /nutrition/analyze:
+    post:
+      tags: [Nutrition]
+      summary: Analyse nutritionnelle complète (UC-01 à UC-08)
+      description: |
+        Effectue l'analyse nutritionnelle complète à partir du profil utilisateur :
+        1. Validation du profil (UC-01)
+        2. Calcul IMC + classification OMS (UC-02)
+        3. Calcul BMR via Mifflin-St Jeor (UC-03)
+        4. Calcul TDEE (BMR × facteur d'activité) (UC-04)
+        5. Ajustement calorique sécurisé selon l'objectif (UC-05)
+        6. Calcul des protéines (UC-06)
+        7. Calcul des lipides (UC-07)
+        8. Calcul des glucides (UC-08)
+      operationId: analyzeNutrition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileInput'
+            examples:
+              homme_perte_poids:
+                summary: Homme — perte de poids
+                value:
+                  sexe: homme
+                  age: 30
+                  taille: 175
+                  poids: 80
+                  niveau_activite: moderement_actif
+                  objectif: perte_poids
+              femme_maintien:
+                summary: Femme — maintien du poids
+                value:
+                  sexe: femme
+                  age: 25
+                  taille: 165
+                  poids: 60
+                  niveau_activite: legerement_actif
+                  objectif: maintien
+              homme_prise_masse:
+                summary: Homme — prise de masse
+                value:
+                  sexe: homme
+                  age: 22
+                  taille: 180
+                  poids: 70
+                  niveau_activite: tres_actif
+                  objectif: prise_masse
+      responses:
+        '200':
+          description: Analyse nutritionnelle réussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NutritionAnalysisResponse'
+              example:
+                status: success
+                data:
+                  profil:
+                    imc:
+                      valeur: 26.1
+                      classification: surpoids
+                      reference: "Classification OMS 2000"
+                    bmr:
+                      valeur: 1847
+                      unite: kcal/jour
+                      methode: "Mifflin-St Jeor"
+                      explication: "Énergie minimale au repos pour un homme de 30 ans, 175 cm, 80 kg"
+                    tdee:
+                      valeur: 2862
+                      unite: kcal/jour
+                      facteur_activite: 1.55
+                      niveau: "modérément actif"
+                  calories_cibles:
+                    valeur: 2362
+                    unite: kcal/jour
+                    ajustement: -500
+                    objectif: "perte de poids sécurisée (≈ 0.5 kg/semaine)"
+                  macronutriments:
+                    proteines:
+                      valeur: 144
+                      unite: g
+                      calories: 576
+                      pourcentage: 24
+                      ratio_par_kg: 1.8
+                    lipides:
+                      valeur: 65
+                      unite: g
+                      calories: 591
+                      pourcentage: 25
+                    glucides:
+                      valeur: 299
+                      unite: g
+                      calories: 1196
+                      pourcentage: 51
+                disclaimer: "Ces recommandations sont à titre informatif et ne remplacent pas un avis médical professionnel."
+        '400':
+          description: Données d'entrée invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '429':
+          description: Trop de requêtes (rate limit atteint)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitErrorResponse'
+        '500':
+          description: Erreur interne du serveur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalErrorResponse'
+
+components:
+  schemas:
+
+    UserProfileInput:
+      type: object
+      required:
+        - sexe
+        - age
+        - taille
+        - poids
+        - niveau_activite
+        - objectif
+      properties:
+        sexe:
+          type: string
+          enum: [homme, femme]
+          description: Sexe biologique (utilisé pour la formule Mifflin-St Jeor)
+        age:
+          type: integer
+          minimum: 15
+          maximum: 120
+          description: Âge en années
+          example: 30
+        taille:
+          type: number
+          minimum: 100
+          maximum: 250
+          description: Taille en centimètres
+          example: 175
+        poids:
+          type: number
+          minimum: 30
+          maximum: 300
+          description: Poids en kilogrammes
+          example: 80
+        niveau_activite:
+          type: string
+          enum:
+            - sedentaire
+            - legerement_actif
+            - moderement_actif
+            - tres_actif
+            - extremement_actif
+          description: |
+            Niveau d'activité physique quotidien :
+            - `sedentaire` : peu ou pas d'exercice (facteur 1.2)
+            - `legerement_actif` : exercice léger 1–3 jours/semaine (facteur 1.375)
+            - `moderement_actif` : exercice modéré 3–5 jours/semaine (facteur 1.55)
+            - `tres_actif` : exercice intense 6–7 jours/semaine (facteur 1.725)
+            - `extremement_actif` : athlète professionnel / travail physique intense (facteur 1.9)
+        objectif:
+          type: string
+          enum:
+            - perte_poids
+            - maintien
+            - prise_masse
+          description: Objectif nutritionnel de l'utilisateur
+
+    IMCResult:
+      type: object
+      properties:
+        valeur:
+          type: number
+          description: Valeur IMC calculée
+          example: 26.1
+        classification:
+          type: string
+          enum: [maigreur_severe, maigreur, normal, surpoids, obesite_1, obesite_2, obesite_3]
+          description: Classification OMS
+          example: surpoids
+        reference:
+          type: string
+          example: "Classification OMS 2000"
+
+    BMRResult:
+      type: object
+      properties:
+        valeur:
+          type: number
+          description: Métabolisme de base en kcal/jour
+          example: 1847
+        unite:
+          type: string
+          example: kcal/jour
+        methode:
+          type: string
+          example: "Mifflin-St Jeor"
+        explication:
+          type: string
+          example: "Énergie minimale au repos pour un homme de 30 ans, 175 cm, 80 kg"
+
+    TDEEResult:
+      type: object
+      properties:
+        valeur:
+          type: number
+          description: Dépense énergétique totale en kcal/jour
+          example: 2862
+        unite:
+          type: string
+          example: kcal/jour
+        facteur_activite:
+          type: number
+          example: 1.55
+        niveau:
+          type: string
+          example: "modérément actif"
+
+    MacroDetail:
+      type: object
+      properties:
+        valeur:
+          type: number
+          description: Quantité en grammes
+        unite:
+          type: string
+          example: g
+        calories:
+          type: number
+          description: Calories apportées par ce macronutriment
+        pourcentage:
+          type: number
+          description: Pourcentage des calories totales
+        ratio_par_kg:
+          type: number
+          description: Ratio g/kg de poids corporel (protéines uniquement)
+
+    NutritionAnalysisResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        data:
+          type: object
+          properties:
+            profil:
+              type: object
+              properties:
+                imc:
+                  $ref: '#/components/schemas/IMCResult'
+                bmr:
+                  $ref: '#/components/schemas/BMRResult'
+                tdee:
+                  $ref: '#/components/schemas/TDEEResult'
+            calories_cibles:
+              type: object
+              properties:
+                valeur:
+                  type: number
+                  example: 2362
+                unite:
+                  type: string
+                  example: kcal/jour
+                ajustement:
+                  type: number
+                  example: -500
+                objectif:
+                  type: string
+                  example: "perte de poids sécurisée (≈ 0.5 kg/semaine)"
+            macronutriments:
+              type: object
+              properties:
+                proteines:
+                  $ref: '#/components/schemas/MacroDetail'
+                lipides:
+                  $ref: '#/components/schemas/MacroDetail'
+                glucides:
+                  $ref: '#/components/schemas/MacroDetail'
+        disclaimer:
+          type: string
+
+    ValidationSuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: "Profil valide"
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: "Données du profil invalides"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                example: age
+              message:
+                type: string
+                example: "L'âge doit être compris entre 15 et 120 ans"
+
+    RateLimitErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        code:
+          type: string
+          example: RATE_LIMIT_EXCEEDED
+        message:
+          type: string
+          example: "Trop de requêtes. Réessayez dans 15 minutes."
+
+    InternalErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: error
+        code:
+          type: string
+          example: INTERNAL_ERROR
+        message:
+          type: string
+          example: "Une erreur interne est survenue"
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+        version:
+          type: string
+          example: "1.0.0"
+        environment:
+          type: string
+          example: production
