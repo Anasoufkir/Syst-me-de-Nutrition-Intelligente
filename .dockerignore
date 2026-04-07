@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.git/
+.env
+.env.*
+coverage/
+*.log
+.DS_Store
+README.md
+CONTRIBUTING.md
+ARCHITECTURE.md
+SETUP.md
+DEPLOYMENT.md
+SECURITY.md
+CHANGELOG.md
+docs/
+tests/
