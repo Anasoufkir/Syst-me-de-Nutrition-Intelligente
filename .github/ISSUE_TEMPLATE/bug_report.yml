@@ -1,0 +1,64 @@
+name: Rapport de bug
+description: Signaler un comportement inattendu ou une erreur
+title: "[BUG] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de remplir ce rapport. Plus il est précis, plus vite on peut corriger.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description du problème
+      description: Décrivez clairement ce qui ne fonctionne pas.
+      placeholder: "L'API retourne un statut 500 quand..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Etapes pour reproduire
+      description: Donnez la requête curl ou le code exact.
+      placeholder: |
+        1. POST /api/v1/nutrition/analyze avec ce payload :
+        ```json
+        { "age": 25, ... }
+        ```
+        2. Réponse obtenue : ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportement attendu
+      placeholder: "Je m'attendais à recevoir un score de..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportement observé
+      placeholder: "J'ai reçu une erreur 500 avec le message..."
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Version Node.js
+      placeholder: "20.x"
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - Linux
+        - macOS
+        - Windows
+        - Docker

@@ -4,6 +4,7 @@
 
 **Moteur de recommandations nutritionnelles personnalisées, scientifiquement fondées et réalistes**
 
+[![CI](https://github.com/Anasoufkir/Syst-me-de-Nutrition-Intelligente/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Anasoufkir/Syst-me-de-Nutrition-Intelligente/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat-square&logo=node.js)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express)](https://expressjs.com/)

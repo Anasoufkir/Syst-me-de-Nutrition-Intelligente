@@ -1,0 +1,9 @@
+# Tous les fichiers — review obligatoire par le mainteneur
+* @Anasoufkir
+
+# API et core — priorité haute
+/src/core/ @Anasoufkir
+/src/api/ @Anasoufkir
+
+# Tests
+/tests/ @Anasoufkir

@@ -1,0 +1,41 @@
+name: Demande de fonctionnalité
+description: Proposer une nouvelle fonctionnalité ou une amélioration
+title: "[FEAT] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Merci de décrire votre idée clairement. Les contributions sont les bienvenues.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problème actuel
+      description: Quel problème cette fonctionnalité résoudrait-elle ?
+      placeholder: "Actuellement il n'est pas possible de..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solution proposée
+      placeholder: "Je voudrais pouvoir passer un paramètre `objectif: prise_de_masse`..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considérées
+      placeholder: "J'ai essayé de contourner en..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priorité selon vous
+      options:
+        - Critique — bloque mon usage
+        - Haute — améliore significativement l'expérience
+        - Normale — serait un plus
+        - Basse — idée d'amélioration future
