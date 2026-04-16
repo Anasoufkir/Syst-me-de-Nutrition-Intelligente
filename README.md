@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🥗 Système de Nutrition Intelligente
+# Système de Nutrition Intelligente
 
 **Moteur de recommandations nutritionnelles personnalisées, scientifiquement fondées et réalistes**
 
@@ -11,38 +11,37 @@
 [![Vitest](https://img.shields.io/badge/Vitest-1.x-6E9F18?style=flat-square&logo=vitest)](https://vitest.dev/)
 [![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker)](docker-compose.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](CONTRIBUTING.md)
 
-[Démo](#-démo-en-direct) · [Installation](#-installation-rapide) · [Comment ça marche](#-comment-ça-marche) · [API](#-api-reference) · [Tests](#-tests)
+[Demo](#demo) · [Installation](#installation-rapide) · [Comment ca marche](#comment-ca-marche) · [API](#api-reference) · [Tests](#tests)
 
 </div>
 
 ---
 
-> ⚠️ **Disclaimer médical** : Ce système est à visée éducative et préventive uniquement. Il ne remplace pas un avis médical ou nutritionnel professionnel.
+> **Avertissement** : Ce système est à visée éducative et préventive uniquement. Il ne remplace pas un avis médical ou nutritionnel professionnel.
 
 ---
 
-## 📋 Table des Matières
+## Table des Matières
 
-- [Pourquoi ce projet](#-pourquoi-ce-projet)
-- [Démo en direct](#-démo-en-direct)
-- [Comment ça marche](#-comment-ça-marche)
-- [Le moteur de calcul](#-le-moteur-de-calcul-étape-par-étape)
-- [Garde-fous de sécurité](#-garde-fous-de-sécurité)
-- [Comparaison de profils](#-comparaison-de-profils)
-- [Architecture](#-architecture)
-- [Stack Technologique](#-stack-technologique)
-- [Installation Rapide](#-installation-rapide)
-- [API Reference](#-api-reference)
-- [Tests](#-tests)
-- [Déploiement](#-déploiement)
-- [Contribution](#-contribution)
-- [Licence](#-licence)
+- [Pourquoi ce projet](#pourquoi-ce-projet)
+- [Demo](#demo)
+- [Comment ca marche](#comment-ca-marche)
+- [Le moteur de calcul](#le-moteur-de-calcul)
+- [Garde-fous de sécurité](#garde-fous-de-sécurité)
+- [Comparaison de profils](#comparaison-de-profils)
+- [Architecture](#architecture)
+- [Stack Technologique](#stack-technologique)
+- [Installation Rapide](#installation-rapide)
+- [API Reference](#api-reference)
+- [Tests](#tests)
+- [Déploiement](#déploiement)
+- [Contribution](#contribution)
+- [Licence](#licence)
 
 ---
 
-## 🎯 Pourquoi ce projet ?
+## Pourquoi ce projet
 
 La plupart des calculateurs nutritionnels en ligne donnent des résultats **génériques et opaques**. Ce projet propose un moteur transparent, explicable et sécurisé :
 
@@ -56,7 +55,7 @@ La plupart des calculateurs nutritionnels en ligne donnent des résultats **gén
 
 ---
 
-## 🎬 Démo en direct
+## Demo
 
 ### Résultat d'analyse — Dashboard complet
 
@@ -68,16 +67,16 @@ La plupart des calculateurs nutritionnels en ligne donnent des résultats **gén
 
 ### Requête & réponse JSON
 
-![Démo — POST /api/v1/nutrition/analyze](docs/screenshots/demo-analyze.svg)
+![Demo — POST /api/v1/nutrition/analyze](docs/screenshots/demo-analyze.svg)
 
 ### Validation — Réponse en cas de profil invalide
 
-![Démo — Erreur de validation 400](docs/screenshots/demo-error.svg)
+![Demo — Erreur de validation 400](docs/screenshots/demo-error.svg)
 
 ---
 
 <details>
-<summary>📋 Voir les exemples en texte brut</summary>
+<summary>Voir les exemples en texte brut</summary>
 
 ### Requête
 
@@ -123,7 +122,7 @@ curl -s -X POST http://localhost:3000/api/v1/nutrition/analyze \
       "valeur": 2211,
       "unite": "kcal/jour",
       "ajustement": -500,
-      "objectif": "perte de poids sécurisée (≈ 0.5 kg/semaine)"
+      "objectif": "perte de poids sécurisée (0.5 kg/semaine)"
     },
     "macronutriments": {
       "proteines": {
@@ -155,7 +154,7 @@ curl -s -X POST http://localhost:3000/api/v1/nutrition/analyze \
 
 ---
 
-## ⚙️ Comment ça marche
+## Comment ca marche
 
 Le moteur exécute **8 use cases en chaîne**, chacun alimentant le suivant :
 
@@ -164,34 +163,34 @@ flowchart TD
     A[Requête HTTP\nPOST /api/v1/nutrition/analyze] --> B
 
     B{UC-01\nValidation du profil}
-    B -- ❌ Invalide --> C[400 Bad Request\nliste des erreurs par champ]
-    B -- ✅ Valide --> D
+    B -- Invalide --> C[400 Bad Request\nliste des erreurs par champ]
+    B -- Valide --> D
 
-    D[UC-02 · Calcul IMC\npoids ÷ taille²\nClassification OMS]
+    D[UC-02 · Calcul IMC\npoids divise taille²\nClassification OMS]
     D --> E
 
     E[UC-03 · Calcul BMR\nMifflin-St Jeor\nkcal au repos]
     E --> F
 
-    F[UC-04 · Calcul TDEE\nBMR × facteur d'activité\nDépense réelle quotidienne]
+    F[UC-04 · Calcul TDEE\nBMR x facteur activite\nDepense reelle quotidienne]
     F --> G
 
     G{UC-05 · Ajustement calorique\nselon objectif}
-    G -- perte_poids --> H1[TDEE − 500 kcal]
+    G -- perte_poids --> H1[TDEE moins 500 kcal]
     G -- maintien --> H2[TDEE = cible]
-    G -- prise_masse --> H3[TDEE + 300 kcal]
+    G -- prise_masse --> H3[TDEE plus 300 kcal]
     H1 --> I
     H2 --> I
     H3 --> I
 
-    I{Garde-fous\nde sécurité}
-    I -- min. physiologique\nnon atteint --> J[Plancher appliqué\n♀ 1200 kcal · ♂ 1500 kcal\n+ avertissement]
+    I{Garde-fous\nde securite}
+    I -- plancher non atteint --> J[Plancher applique\nfemme 1200 kcal · homme 1500 kcal\navertissement]
     I -- OK --> K
 
-    J --> K[UC-06 · Protéines\npoids × ratio g/kg]
-    K --> L[UC-07 · Lipides\n30% des calories\nmin. 40 g garanti]
-    L --> M[UC-08 · Glucides\nReste calorique ÷ 4\nVérification cohérence]
-    M --> N[✅ 200 OK\nNutritionReport JSON]
+    J --> K[UC-06 · Proteines\npoids x ratio g/kg]
+    K --> L[UC-07 · Lipides\n30% des calories\nmin 40g garanti]
+    L --> M[UC-08 · Glucides\nReste calorique divise 4\nVerification coherence]
+    M --> N[200 OK\nNutritionReport JSON]
 
     style C fill:#ff6b6b,color:#fff
     style J fill:#ffa94d,color:#fff
@@ -200,60 +199,64 @@ flowchart TD
 
 ---
 
-## 🔬 Le Moteur de Calcul — Étape par Étape
+## Le moteur de calcul
 
 Voici comment le système transforme **6 paramètres** en **un plan nutritionnel complet** :
 
 ### Profil exemple : Femme, 28 ans, 62 kg, 168 cm, légèrement active, perte de poids
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  ÉTAPE 1 — IMC (UC-02)                                          │
-│                                                                 │
-│  IMC = 62 ÷ (1.68)² = 21.97  →  ✅ NORMAL (18.5 – 24.9)        │
-│                                   Référence : OMS 2000          │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  ÉTAPE 2 — BMR / Métabolisme de base (UC-03)                    │
-│                                                                 │
-│  Mifflin-St Jeor (femme) :                                      │
-│  BMR = (10 × 62) + (6.25 × 168) − (5 × 28) − 161              │
-│      =  620   +   1050      −   140    − 161                    │
-│      =  1369 kcal/jour                                          │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  ÉTAPE 3 — TDEE / Dépense totale (UC-04)                        │
-│                                                                 │
-│  TDEE = BMR × facteur légèrement active                         │
-│       = 1369 × 1.375 = 1882 kcal/jour                          │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  ÉTAPE 4 — Calories cibles (UC-05)                              │
-│                                                                 │
-│  Objectif perte de poids → déficit de 500 kcal                 │
-│  Cible = 1882 − 500 = 1382 kcal/jour                           │
-│                                                                 │
-│  🛡️  Vérification plancher femme : 1382 > 1200 ✅ → OK         │
-│  Perte estimée : ≈ 0.5 kg / semaine                             │
-└─────────────────────────────────────────────────────────────────┘
-                              ↓
-┌─────────────────────────────────────────────────────────────────┐
-│  ÉTAPE 5 — Macronutriments (UC-06 / UC-07 / UC-08)              │
-│                                                                 │
-│  Protéines : 62 kg × 2.0 g/kg = 124 g  →  496 kcal  (36%)     │
-│  Lipides   : 1382 × 30% ÷ 9   =  46 g  →  415 kcal  (30%)     │
-│  Glucides  : (1382 − 496 − 415) ÷ 4    =  118 g  (34%)        │
-│                                                                 │
-│  Σ = 496 + 415 + 471 = 1382 kcal ✅                             │
-└─────────────────────────────────────────────────────────────────┘
++------------------------------------------------------------------+
+|  ETAPE 1 — IMC (UC-02)                                           |
+|                                                                  |
+|  IMC = 62 / (1.68)² = 21.97  ->  NORMAL (18.5 – 24.9)           |
+|                                   Référence : OMS 2000           |
++------------------------------------------------------------------+
+                              |
+                              v
++------------------------------------------------------------------+
+|  ETAPE 2 — BMR / Métabolisme de base (UC-03)                     |
+|                                                                  |
+|  Mifflin-St Jeor (femme) :                                       |
+|  BMR = (10 x 62) + (6.25 x 168) − (5 x 28) − 161               |
+|      =  620   +   1050      −   140    − 161                     |
+|      =  1369 kcal/jour                                           |
++------------------------------------------------------------------+
+                              |
+                              v
++------------------------------------------------------------------+
+|  ETAPE 3 — TDEE / Dépense totale (UC-04)                         |
+|                                                                  |
+|  TDEE = BMR x facteur légèrement active                          |
+|       = 1369 x 1.375 = 1882 kcal/jour                           |
++------------------------------------------------------------------+
+                              |
+                              v
++------------------------------------------------------------------+
+|  ETAPE 4 — Calories cibles (UC-05)                               |
+|                                                                  |
+|  Objectif perte de poids -> déficit de 500 kcal                  |
+|  Cible = 1882 − 500 = 1382 kcal/jour                            |
+|                                                                  |
+|  Vérification plancher femme : 1382 > 1200  -> OK                |
+|  Perte estimée : 0.5 kg / semaine                                |
++------------------------------------------------------------------+
+                              |
+                              v
++------------------------------------------------------------------+
+|  ETAPE 5 — Macronutriments (UC-06 / UC-07 / UC-08)               |
+|                                                                  |
+|  Protéines : 62 kg x 2.0 g/kg = 124 g  ->  496 kcal  (36%)      |
+|  Lipides   : 1382 x 30% / 9   =  46 g  ->  415 kcal  (30%)      |
+|  Glucides  : (1382 − 496 − 415) / 4    =  118 g  (34%)          |
+|                                                                  |
+|  Total = 496 + 415 + 471 = 1382 kcal                             |
++------------------------------------------------------------------+
 ```
 
 ---
 
-## 🛡️ Garde-fous de Sécurité
+## Garde-fous de Sécurité
 
 Le système refuse les recommandations physiologiquement dangereuses :
 
@@ -261,42 +264,42 @@ Le système refuse les recommandations physiologiquement dangereuses :
 graph LR
     A["Calories calculées\n(TDEE ± objectif)"] --> B{Vérification\nplancher}
 
-    B -- "♀ < 1200 kcal" --> C["🔴 Plancher appliqué\n1200 kcal + avertissement"]
-    B -- "♂ < 1500 kcal" --> D["🔴 Plancher appliqué\n1500 kcal + avertissement"]
-    B -- "Déficit > 500 kcal" --> E["🔴 Déficit plafonné\nà −500 kcal/j"]
-    B -- "✅ Dans les bornes" --> F["✅ Valeur retournée\ntelle quelle"]
+    B -- "femme < 1200 kcal" --> C["Plancher appliqué\n1200 kcal + avertissement"]
+    B -- "homme < 1500 kcal" --> D["Plancher appliqué\n1500 kcal + avertissement"]
+    B -- "Déficit > 500 kcal" --> E["Déficit plafonné\nà -500 kcal/j"]
+    B -- "Dans les bornes" --> F["Valeur retournée\ntelle quelle"]
 
     G["Lipides calculés"] --> H{min. 40 g ?}
-    H -- "< 40 g" --> I["🟡 Minimum appliqué\n40 g + avertissement"]
-    H -- "≥ 40 g" --> J["✅ OK"]
+    H -- "< 40 g" --> I["Minimum appliqué\n40 g + avertissement"]
+    H -- ">= 40 g" --> J["OK"]
 
     K["Glucides calculés"] --> L{min. 50 g ?}
-    L -- "< 50 g" --> M["🟡 Alerte régime\nbasse glucides"]
-    L -- "≥ 50 g" --> N["✅ OK"]
+    L -- "< 50 g" --> M["Alerte régime\nbasse glucides"]
+    L -- ">= 50 g" --> N["OK"]
 ```
 
 ---
 
-## 📊 Comparaison de Profils
+## Comparaison de profils
 
 Le système s'adapte à chaque profil. Voici 4 exemples réels :
 
 | Profil | IMC | BMR | TDEE | Calories cibles | Protéines | Lipides | Glucides |
 |--------|-----|-----|------|----------------|-----------|---------|---------|
-| ♂ 30 ans · 80 kg · 175 cm · modéré · **perte** | 26.1 surpoids | 1749 | 2711 | **2211** | 160 g | 74 g | 227 g |
-| ♀ 25 ans · 60 kg · 165 cm · léger · **maintien** | 22.0 normal | 1381 | 1899 | **1899** | 96 g | 63 g | 262 g |
-| ♂ 22 ans · 70 kg · 180 cm · très actif · **prise masse** | 21.6 normal | 1787 | 3082 | **3382** | 154 g | 113 g | 435 g |
-| ♀ 45 ans · 90 kg · 162 cm · sédentaire · **perte** | 34.3 obésité I | 1572 | 1886 | **1386** | 180 g | 46 g | 91 g |
+| H 30 ans · 80 kg · 175 cm · modéré · perte | 26.1 surpoids | 1749 | 2711 | **2211** | 160 g | 74 g | 227 g |
+| F 25 ans · 60 kg · 165 cm · léger · maintien | 22.0 normal | 1381 | 1899 | **1899** | 96 g | 63 g | 262 g |
+| H 22 ans · 70 kg · 180 cm · très actif · prise masse | 21.6 normal | 1787 | 3082 | **3382** | 154 g | 113 g | 435 g |
+| F 45 ans · 90 kg · 162 cm · sédentaire · perte | 34.3 obésité I | 1572 | 1886 | **1386** | 180 g | 46 g | 91 g |
 
 > Chaque ligne est le résultat d'un appel API — même endpoint, profils différents.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```mermaid
 graph TD
-    Client["🌐 Client\ncurl / app / Swagger UI"]
+    Client["Client\ncurl / app / Swagger UI"]
 
     subgraph API["API Layer — Express"]
         MW["Middlewares\nHelmet · CORS · Rate Limit · Body Parser"]
@@ -311,7 +314,7 @@ graph TD
         IMC["IMC Calculator\nUC-02"]
         BMR["BMR Calculator\nMifflin-St Jeor — UC-03"]
         TDEE["TDEE Calculator\nUC-04"]
-        CA["Caloric Adjuster\n+ Safety Guards — UC-05"]
+        CA["Caloric Adjuster\nSafety Guards — UC-05"]
         MC["Macro Calculator\nUC-06 · UC-07 · UC-08"]
     end
 
@@ -328,7 +331,7 @@ Voir [ARCHITECTURE.md](ARCHITECTURE.md) pour les décisions techniques et réfé
 
 ---
 
-## 🛠️ Stack Technologique
+## Stack Technologique
 
 | Couche | Technologie | Rôle |
 |--------|-------------|------|
@@ -345,7 +348,7 @@ Voir [ARCHITECTURE.md](ARCHITECTURE.md) pour les décisions techniques et réfé
 
 ---
 
-## 🚀 Installation Rapide
+## Installation Rapide
 
 ### Via Docker (recommandé)
 
@@ -369,11 +372,11 @@ npm run build
 npm start
 ```
 
-Guide complet → [SETUP.md](SETUP.md)
+Guide complet : [SETUP.md](SETUP.md)
 
 ---
 
-## 📚 API Reference
+## API Reference
 
 ![Swagger UI](docs/screenshots/swagger-ui.svg)
 
@@ -385,7 +388,7 @@ Documentation interactive : `http://localhost:3000/api/docs` · Spec YAML : [`do
 |---------|----------|-------------|
 | `GET`  | `/api/v1/health` | Health check |
 | `POST` | `/api/v1/nutrition/validate` | Validation du profil (UC-01) |
-| `POST` | `/api/v1/nutrition/analyze` | Analyse nutritionnelle complète (UC-01→08) |
+| `POST` | `/api/v1/nutrition/analyze` | Analyse nutritionnelle complète (UC-01 à UC-08) |
 
 ### Corps de la requête
 
@@ -403,11 +406,11 @@ Documentation interactive : `http://localhost:3000/api/docs` · Spec YAML : [`do
 
 ---
 
-## 🧪 Tests
+## Tests
 
 ```bash
 npm test              # tous les tests
-npm run test:coverage # rapport de couverture (cible ≥ 80%)
+npm run test:coverage # rapport de couverture (cible >= 80%)
 ```
 
 ![Résultats des tests](docs/screenshots/test-results.svg)
@@ -420,7 +423,7 @@ npm run test:coverage # rapport de couverture (cible ≥ 80%)
 | `imc.calculator` | 7 tests | 8 classifications OMS, arrondi, référence |
 | `bmr.calculator` | 5 tests | Formule homme/femme, explication, entier |
 | `tdee.calculator` | 8 tests | 5 niveaux d'activité, monotonicité, entier |
-| `caloric.adjuster` | 6 tests | 3 objectifs, planchers ♀/♂, avertissement |
+| `caloric.adjuster` | 6 tests | 3 objectifs, planchers femme/homme, avertissement |
 | `macro.calculator` | 12 tests | Ratios protéines, 9 kcal/g lipides, reste glucides, cohérence |
 | **API (intégration)** | **13 tests** | Happy path, erreurs 400, plancher sécurité, TDEE > BMR |
 | **Total** | **60 tests** | |
@@ -430,20 +433,20 @@ npm run test:coverage # rapport de couverture (cible ≥ 80%)
 ```mermaid
 graph LR
     Push["git push"] --> L["Lint\nESLint + Typecheck"]
-    L --> T["Tests\n+ Coverage ≥ 80%"]
+    L --> T["Tests\n+ Coverage >= 80%"]
     T --> S["Security\nnpm audit"]
     S --> B["Build\ntsc compile"]
-    B --> OK["✅ Merge autorisé"]
+    B --> OK["Merge autorisé"]
 
-    L -- ❌ --> FAIL["🔴 PR bloquée"]
-    T -- ❌ --> FAIL
-    S -- ❌ --> FAIL
-    B -- ❌ --> FAIL
+    L -- Erreur --> FAIL["PR bloquée"]
+    T -- Erreur --> FAIL
+    S -- Erreur --> FAIL
+    B -- Erreur --> FAIL
 ```
 
 ---
 
-## 🚢 Déploiement
+## Déploiement
 
 Guides complets dans [DEPLOYMENT.md](DEPLOYMENT.md) :
 
@@ -451,24 +454,24 @@ Guides complets dans [DEPLOYMENT.md](DEPLOYMENT.md) :
 |---------|---------|
 | Docker production | `docker compose up -d --build` |
 | VPS + PM2 | `pm2 start dist/app.js --name nutrition-api` |
-| Nginx reverse proxy | Voir [DEPLOYMENT.md#nginx](DEPLOYMENT.md#reverse-proxy-nginx) |
-| HTTPS (Certbot) | Voir [DEPLOYMENT.md#https](DEPLOYMENT.md#https-avec-certbot) |
+| Nginx reverse proxy | Voir [DEPLOYMENT.md](DEPLOYMENT.md) |
+| HTTPS (Certbot) | Voir [DEPLOYMENT.md](DEPLOYMENT.md) |
 
 ---
 
-## 🤝 Contribution
+## Contribution
 
 Les contributions sont les bienvenues. Voir [CONTRIBUTING.md](CONTRIBUTING.md) pour les conventions de code, le format des commits et le processus de PR.
 
 ---
 
-## 🔒 Sécurité
+## Sécurité
 
-Pour signaler une vulnérabilité → [SECURITY.md](SECURITY.md)
+Pour signaler une vulnérabilité, voir [SECURITY.md](SECURITY.md).
 
 ---
 
-## 📄 Licence
+## Licence
 
 MIT — voir [LICENSE](LICENSE)
 
