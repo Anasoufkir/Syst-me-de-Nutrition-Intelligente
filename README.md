@@ -58,7 +58,15 @@ La plupart des calculateurs nutritionnels en ligne donnent des résultats **gén
 
 ## 🎬 Démo en direct
 
-### Analyse nutritionnelle complète
+### Résultat d'analyse — Dashboard complet
+
+![Dashboard résultat nutritionnel](docs/screenshots/result-dashboard.svg)
+
+### Comparaison de 4 profils — même API, résultats uniques
+
+![Comparaison de profils](docs/screenshots/profile-comparison.svg)
+
+### Requête & réponse JSON
 
 ![Démo — POST /api/v1/nutrition/analyze](docs/screenshots/demo-analyze.svg)
 
