@@ -58,6 +58,19 @@ La plupart des calculateurs nutritionnels en ligne donnent des résultats **gén
 
 ## 🎬 Démo en direct
 
+### Analyse nutritionnelle complète
+
+![Démo — POST /api/v1/nutrition/analyze](docs/screenshots/demo-analyze.svg)
+
+### Validation — Réponse en cas de profil invalide
+
+![Démo — Erreur de validation 400](docs/screenshots/demo-error.svg)
+
+---
+
+<details>
+<summary>📋 Voir les exemples en texte brut</summary>
+
 ### Requête
 
 ```bash
@@ -130,29 +143,7 @@ curl -s -X POST http://localhost:3000/api/v1/nutrition/analyze \
 }
 ```
 
-### Validation — Réponse en cas d'erreur
-
-```bash
-curl -s -X POST http://localhost:3000/api/v1/nutrition/analyze \
-  -H "Content-Type: application/json" \
-  -d '{ "sexe": "robot", "age": -5 }' | jq
-```
-
-```json
-{
-  "status": "error",
-  "code": "VALIDATION_ERROR",
-  "message": "Données du profil invalides",
-  "errors": [
-    { "field": "sexe",            "message": "Le sexe doit être \"homme\" ou \"femme\"" },
-    { "field": "age",             "message": "L'âge minimum est 15 ans" },
-    { "field": "taille",          "message": "Required" },
-    { "field": "poids",           "message": "Required" },
-    { "field": "niveau_activite", "message": "Niveau d'activité invalide" },
-    { "field": "objectif",        "message": "Objectif invalide" }
-  ]
-}
-```
+</details>
 
 ---
 
@@ -357,10 +348,7 @@ cp .env.example .env
 docker compose up -d
 ```
 
-```
-✅ API     → http://localhost:3000/api/v1/health
-✅ Swagger → http://localhost:3000/api/docs
-```
+![Docker start + health check](docs/screenshots/docker-start.svg)
 
 ### Installation manuelle
 
@@ -378,6 +366,8 @@ Guide complet → [SETUP.md](SETUP.md)
 ---
 
 ## 📚 API Reference
+
+![Swagger UI](docs/screenshots/swagger-ui.svg)
 
 Documentation interactive : `http://localhost:3000/api/docs` · Spec YAML : [`docs/api/openapi.yaml`](docs/api/openapi.yaml)
 
@@ -411,6 +401,8 @@ Documentation interactive : `http://localhost:3000/api/docs` · Spec YAML : [`do
 npm test              # tous les tests
 npm run test:coverage # rapport de couverture (cible ≥ 80%)
 ```
+
+![Résultats des tests](docs/screenshots/test-results.svg)
 
 ### Couverture actuelle
 
